@@ -7,6 +7,7 @@ import (
 
 	"github.com/devrodriguez/multitienda-api/db"
 	"github.com/devrodriguez/multitienda-api/models"
+	"github.com/devrodriguez/multitienda-api/utilities"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -22,7 +23,7 @@ func GetStores(gCtx *gin.Context) {
 	//findOptions.SetLimit(2)
 
 	storesRef := mgClient.Database("multitienda").Collection("stores")
-	storesCur, err := storesRef.Find(context.TODO(), bson.D{{}}, findOptions)
+	storesCur, err := storesRef.Find(context.TODO(), bson.M{"status": "approved"}, findOptions)
 
 	if err != nil {
 		response.Message = "Error getting data"
@@ -55,6 +56,7 @@ func GetStores(gCtx *gin.Context) {
 func CreateStore(gCtx *gin.Context) {
 	var response models.Response
 	var store models.Store
+
 	mgClient := db.GetClient()
 
 	if err := gCtx.BindJSON(&store); err != nil {
@@ -64,6 +66,21 @@ func CreateStore(gCtx *gin.Context) {
 		return
 	}
 
+	store.Status = "pendding"
+
+	// Store images
+	pathImgs, err := saveImages(store.String64Images)
+	if err != nil {
+		response.Message = "Error reading images"
+		response.Error = err.Error()
+		gCtx.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	store.String64Images = nil
+	store.UrlImages = pathImgs
+
+	// Database reference
 	storeRef := mgClient.Database("multitienda").Collection("stores")
 	insertRes, err := storeRef.InsertOne(context.TODO(), store)
 
@@ -78,4 +95,24 @@ func CreateStore(gCtx *gin.Context) {
 	response.Message = "Document created"
 	response.Data = gin.H{"docID": insertRes.InsertedID}
 	gCtx.JSON(http.StatusOK, response)
+}
+
+func saveImages(bs64Img []string) ([]string, error) {
+	var pathImgs []string
+
+	for _, v := range bs64Img {
+		randStr := utilities.RandomString(12)
+		filename := randStr
+		filePath, err := utilities.ToFile(v, filename)
+
+		if err != nil {
+			log.Println("Error al guardar imagen")
+			return nil, err
+		}
+
+		pathImgs = append(pathImgs, filePath)
+		log.Println(pathImgs)
+	}
+
+	return pathImgs, nil
 }

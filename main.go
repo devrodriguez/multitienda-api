@@ -19,6 +19,9 @@ func main() {
 	port := os.Getenv("PORT")
 	server := gin.New()
 
+	// Serve static files
+	server.Static("/s", "./storage")
+
 	// Set log file
 	setupLogOutput()
 
@@ -38,6 +41,9 @@ func main() {
 		pubRoutes.GET("/signin", controllers.SignIn)
 		pubRoutes.GET("/stores", controllers.GetStores)
 		pubRoutes.POST("/stores", controllers.CreateStore)
+		pubRoutes.GET("/customers", controllers.GetCustomers)
+		pubRoutes.POST("/customers", controllers.CreateCustomer)
+		pubRoutes.GET("/categories", controllers.GetCategories)
 	}
 
 	if port == "" {
