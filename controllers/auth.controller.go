@@ -14,18 +14,19 @@ import (
 // SignIn retorna un token de autenticacion
 func SignIn(gCtx *gin.Context) {
 	var response models.Response
-	var user models.User
+	var customer models.Customer
 
 	// == VALIDATE USER AND PASSWORD ==
 	// Get user data
-	if err := gCtx.BindJSON(&user); err != nil {
+	if err := gCtx.BindJSON(&customer); err != nil {
 		response.Message = "Error binding data"
 		response.Error = err.Error()
 		gCtx.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	if !ValidateUserAuth(&user) {
+	isValid, validCustomer := ValidateUserAuth(&customer)
+	if !isValid {
 		response.Message = "Wrong user or password"
 
 		gCtx.JSON(http.StatusOK, response)
@@ -45,7 +46,11 @@ func SignIn(gCtx *gin.Context) {
 		return
 	}
 
-	response.Data = gin.H{"token": string(token)}
+	validCustomer.Password = ""
+	// validCustomer.SessionToken = string(token)
+	validCustomer.UpdateToken(string(token))
+
+	response.Data = validCustomer
 	gCtx.JSON(http.StatusOK, response)
 }
 
@@ -117,11 +122,16 @@ func VerifyToken(r *http.Request) error {
 	return nil
 }
 
-func ValidateUserAuth(user *models.User) bool {
-	log.Println(user)
-	if user.Name == "john" && user.Password == "12345" {
-		return true
+func ValidateUserAuth(customer *models.Customer) (bool, models.Customer) {
+	err, fnCustomer := customer.FindOne()
+	log.Println("Cliente DB: ", fnCustomer)
+	if err != nil {
+		return false, models.Customer{}
 	}
 
-	return false
+	if fnCustomer.Email == "john@email.com" && customer.Password == fnCustomer.Password {
+		return true, fnCustomer
+	}
+
+	return false, models.Customer{}
 }

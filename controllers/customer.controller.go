@@ -79,5 +79,4 @@ func CreateCustomer(gCtx *gin.Context) {
 	response.Message = "Document created"
 
 	gCtx.JSON(http.StatusOK, response)
-
 }

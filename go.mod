@@ -11,6 +11,7 @@ require (
 	github.com/manucorporat/sse v0.0.0-20160126180136-ee05b128a739 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/umahmood/haversine v0.0.0-20151105152445-808ab04add26
 	go.mongodb.org/mongo-driver v1.3.2
 	golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f // indirect
 )

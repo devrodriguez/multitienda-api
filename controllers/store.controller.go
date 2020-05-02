@@ -4,12 +4,14 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/devrodriguez/multitienda-api/db"
 	"github.com/devrodriguez/multitienda-api/models"
 	"github.com/devrodriguez/multitienda-api/utilities"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -42,6 +44,80 @@ func GetStores(gCtx *gin.Context) {
 		}
 
 		stores = append(stores, &store)
+	}
+
+	if err := storesCur.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	storesCur.Close(context.TODO())
+
+	gCtx.JSON(http.StatusOK, stores)
+}
+
+func FindStores(gCtx *gin.Context) {
+	var stores []*models.Store
+	var response models.Response
+	var posOrigin models.GpsPoint
+
+	mgClient := *db.GetClient()
+	findOptions := options.Find()
+	q := gCtx.Query("q")
+
+	// Find approved and name ocurence
+	filter := bson.M{"status": "approved", "name": primitive.Regex{Pattern: q, Options: ""}}
+
+	log.Println("Lat: ", gCtx.Query("lat"), "Lon: ", gCtx.Query("lon"), "dist: ", gCtx.Query("dist"))
+
+	lat, err := strconv.ParseFloat(gCtx.Query("lat"), 64)
+	if err != nil {
+		gCtx.JSON(http.StatusOK, stores)
+		return
+	}
+
+	lon, err := strconv.ParseFloat(gCtx.Query("lon"), 64)
+	if err != nil {
+		gCtx.JSON(http.StatusOK, stores)
+		return
+	}
+
+	posOrigin.Lat = lat
+	posOrigin.Lon = lon
+
+	//findOptions.SetLimit(2)
+	kmDistFixed, err := strconv.ParseFloat(gCtx.Query("dist"), 64)
+	if err != nil {
+		kmDistFixed = 0
+	}
+
+	log.Println("Lat: ", lat, "Lon: ", lon, "dist: ", kmDistFixed)
+
+	storesRef := mgClient.Database("multitienda").Collection("stores")
+	storesCur, err := storesRef.Find(context.TODO(), filter, findOptions)
+
+	if err != nil {
+		response.Message = "Error getting data"
+		response.Error = err.Error()
+
+		gCtx.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	for storesCur.Next(context.TODO()) {
+		var store models.Store
+
+		err := storesCur.Decode(&store)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, kmDist := utilities.HaversineFormule(posOrigin, store.GeoLocation)
+
+		log.Println("Distancia entre puntos: ", kmDist)
+
+		if kmDist <= kmDistFixed {
+			stores = append(stores, &store)
+		}
 	}
 
 	if err := storesCur.Err(); err != nil {

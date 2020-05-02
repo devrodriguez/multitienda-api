@@ -38,12 +38,13 @@ func main() {
 	// Routes
 	pubRoutes := server.Group("/api")
 	{
-		pubRoutes.GET("/signin", controllers.SignIn)
+		pubRoutes.POST("/signin", controllers.SignIn)
 		pubRoutes.GET("/stores", controllers.GetStores)
 		pubRoutes.POST("/stores", controllers.CreateStore)
 		pubRoutes.GET("/customers", controllers.GetCustomers)
 		pubRoutes.POST("/customers", controllers.CreateCustomer)
 		pubRoutes.GET("/categories", controllers.GetCategories)
+		pubRoutes.GET("/find", controllers.FindStores)
 	}
 
 	if port == "" {
