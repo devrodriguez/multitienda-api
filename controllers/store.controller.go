@@ -65,7 +65,7 @@ func FindStores(gCtx *gin.Context) {
 	q := gCtx.Query("q")
 
 	// Find approved and name ocurence
-	filter := bson.M{"status": "approved", "name": primitive.Regex{Pattern: q, Options: ""}}
+	filter := bson.M{"$and": []bson.M{{"status": "approved"}, {"$or": []bson.M{{"name": primitive.Regex{Pattern: q, Options: "i"}}, {"category.name": primitive.Regex{Pattern: q, Options: "i"}}}}}}
 
 	log.Println("Lat: ", gCtx.Query("lat"), "Lon: ", gCtx.Query("lon"), "dist: ", gCtx.Query("dist"))
 
@@ -84,13 +84,11 @@ func FindStores(gCtx *gin.Context) {
 	posOrigin.Lat = lat
 	posOrigin.Lon = lon
 
-	//findOptions.SetLimit(2)
+	findOptions.SetLimit(100)
 	kmDistFixed, err := strconv.ParseFloat(gCtx.Query("dist"), 64)
 	if err != nil {
 		kmDistFixed = 0
 	}
-
-	log.Println("Lat: ", lat, "Lon: ", lon, "dist: ", kmDistFixed)
 
 	storesRef := mgClient.Database("multitienda").Collection("stores")
 	storesCur, err := storesRef.Find(context.TODO(), filter, findOptions)
@@ -111,11 +109,9 @@ func FindStores(gCtx *gin.Context) {
 			log.Fatal(err)
 		}
 
-		_, kmDist := utilities.HaversineFormule(posOrigin, store.GeoLocation)
+		_, km := utilities.HaversineFormule(posOrigin, store.GeoLocation)
 
-		log.Println("Distancia entre puntos: ", kmDist)
-
-		if kmDist <= kmDistFixed {
+		if km <= kmDistFixed {
 			stores = append(stores, &store)
 		}
 	}
@@ -125,7 +121,6 @@ func FindStores(gCtx *gin.Context) {
 	}
 
 	storesCur.Close(context.TODO())
-
 	gCtx.JSON(http.StatusOK, stores)
 }
 
@@ -143,6 +138,14 @@ func CreateStore(gCtx *gin.Context) {
 	}
 
 	store.Status = "pendding"
+
+	// Get address coordenates
+	if err := store.GetCoordinates(); err != nil {
+		response.Message = "Error getting coordinates"
+		response.Error = err.Error()
+		gCtx.JSON(http.StatusInternalServerError, response)
+		return
+	}
 
 	// Store images
 	pathImgs, err := saveImages(store.String64Images)

@@ -44,7 +44,10 @@ func main() {
 		pubRoutes.GET("/customers", controllers.GetCustomers)
 		pubRoutes.POST("/customers", controllers.CreateCustomer)
 		pubRoutes.GET("/categories", controllers.GetCategories)
-		pubRoutes.GET("/find", controllers.FindStores)
+		pubRoutes.GET("/stores/find", controllers.FindStores)
+		pubRoutes.GET("/geo/address-pred", controllers.GetAddresPredictions)
+		pubRoutes.GET("/geo/coord-address", controllers.CoordinatesToAddres)
+		pubRoutes.GET("/geo/address-coord", controllers.AddressToCoordinates)
 	}
 
 	if port == "" {

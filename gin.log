@@ -4,11 +4,17 @@
 [GIN-debug] GET    /api/customers            --> github.com/devrodriguez/multitienda-api/controllers.GetCustomers (4 handlers)
 [GIN-debug] POST   /api/customers            --> github.com/devrodriguez/multitienda-api/controllers.CreateCustomer (4 handlers)
 [GIN-debug] GET    /api/categories           --> github.com/devrodriguez/multitienda-api/controllers.GetCategories (4 handlers)
-[GIN-debug] GET    /api/find                 --> github.com/devrodriguez/multitienda-api/controllers.FindStores (4 handlers)
+[GIN-debug] GET    /api/stores/find          --> github.com/devrodriguez/multitienda-api/controllers.FindStores (4 handlers)
+[GIN-debug] GET    /api/geo/address-pred     --> github.com/devrodriguez/multitienda-api/controllers.GetAddresPredictions (4 handlers)
+[GIN-debug] GET    /api/geo/coord-address    --> github.com/devrodriguez/multitienda-api/controllers.CoordinatesToAddres (4 handlers)
+[GIN-debug] GET    /api/geo/address-coord    --> github.com/devrodriguez/multitienda-api/controllers.AddressToCoordinates (4 handlers)
 [GIN-debug] Listening and serving HTTP on :3001
-::1 - [Sat, 02 May 2020 01:20:04 -05] "GET /api/find?dist=1&lat=4.74593&lon=74.0380364 HTTP/1.1 200 246.805ms "PostmanRuntime/7.24.1" "
-::1 - [Sat, 02 May 2020 01:20:55 -05] "GET /api/find?dist=9000&lat=4.74593&lon=74.0380364 HTTP/1.1 200 91.5231ms "PostmanRuntime/7.24.1" "
-::1 - [Sat, 02 May 2020 01:22:18 -05] "GET /api/find?dist=9000&lat=4.74593&lon=74.0380364&q=neg HTTP/1.1 200 93.5306ms "PostmanRuntime/7.24.1" "
-::1 - [Sat, 02 May 2020 01:22:29 -05] "GET /api/find?dist=9000&lat=4.74593&lon=74.0380364&q=ne HTTP/1.1 200 93.9991ms "PostmanRuntime/7.24.1" "
-::1 - [Sat, 02 May 2020 01:22:35 -05] "GET /api/find?dist=9000&lat=4.74593&lon=74.0380364&q= HTTP/1.1 200 112.9814ms "PostmanRuntime/7.24.1" "
-::1 - [Sat, 02 May 2020 01:22:50 -05] "GET /api/find?dist=9000&lat=4.74593&lon=74.0380364&q=tien HTTP/1.1 200 93.1595ms "PostmanRuntime/7.24.1" "
+127.0.0.1 - [Tue, 05 May 2020 20:28:34 -05] "GET /api/stores/find?dist=2000000&lat=4.7359862999999995&lon=-74.04175130000002&q=pana HTTP/1.1 200 294.5404ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
+127.0.0.1 - [Tue, 05 May 2020 20:28:35 -05] "GET /api/stores/find?dist=2000000&lat=4.7359862999999995&lon=-74.04175130000002&q=tienda HTTP/1.1 200 114.9813ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
+127.0.0.1 - [Tue, 05 May 2020 20:28:39 -05] "GET /api/stores/find?dist=2000000&lat=4.7359862999999995&lon=-74.04175130000002&q=carni HTTP/1.1 200 180.5635ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
+::1 - [Tue, 05 May 2020 20:28:51 -05] "GET /api/stores/find?dist=2000000&lat=4.7359862999999995&lon=-74.04175130000002&q=otro HTTP/1.1 200 94.999ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
+::1 - [Tue, 05 May 2020 20:28:55 -05] "GET /api/stores/find?dist=2000000&lat=4.7359862999999995&lon=-74.04175130000002&q=pana HTTP/1.1 200 204.0604ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
+::1 - [Tue, 05 May 2020 20:29:05 -05] "GET /api/categories HTTP/1.1 200 93.0219ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
+::1 - [Tue, 05 May 2020 20:30:33 -05] "GET /api/stores/find?dist=2000000&lat=4.7459325&lon=-74.037949&q=panad HTTP/1.1 200 102.9826ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
+::1 - [Tue, 05 May 2020 20:30:55 -05] "GET /api/stores/find?dist=2000000&lat=4.7459325&lon=-74.037949&q=car HTTP/1.1 200 94.0966ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
+::1 - [Tue, 05 May 2020 20:30:58 -05] "GET /api/stores/find?dist=2000000&lat=4.7459325&lon=-74.037949&q=a HTTP/1.1 200 160.9947ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36" "
