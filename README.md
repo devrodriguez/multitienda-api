@@ -8,7 +8,7 @@ db.categories.insert({"name":"Carnicos", "description": "Carnes y embutidos"})
 # Heroku
 - Deploy
 ## Create Heroku app
-heroku create
+heroku create -a "project-name"
 
 ## Deploy app
 git push heroku master
