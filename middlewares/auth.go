@@ -3,8 +3,8 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/devrodriguez/audit-api/controllers"
-	"github.com/devrodriguez/audit-api/models"
+	"github.com/devrodriguez/multitienda-api/controllers"
+	"github.com/devrodriguez/multitienda-api/models"
 	"github.com/gin-gonic/gin"
 )
 
