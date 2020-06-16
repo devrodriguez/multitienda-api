@@ -1,17 +1,20 @@
 package category
 
-import category "github.com/devrodriguez/multitienda-api/category/domain"
+import (
+	domain "github.com/devrodriguez/multitienda-api/category/domain"
+	infra "github.com/devrodriguez/multitienda-api/category/infrastructure"
+)
 
 type categoryService struct {
-	categoryRepository category.RepositoryContract
+	categoryRepository infra.RepositoryContract
 }
 
-func NewCategoryService(repositoryContract category.RepositoryContract) category.ServiceContract {
+func NewCategoryService(repositoryContract infra.RepositoryContract) domain.ServiceContract {
 	return &categoryService{
 		repositoryContract,
 	}
 }
 
-func (rs *categoryService) GetAll() ([]*category.Category, error) {
-	return rs.categoryRepository.GetAll()
+func (cs *categoryService) GetAll() ([]*domain.Category, error) {
+	return cs.categoryRepository.GetAll()
 }

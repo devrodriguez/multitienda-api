@@ -3,25 +3,40 @@ package api
 import (
 	"net/http"
 
-	category "github.com/devrodriguez/multitienda-api/category/domain"
+	cd "github.com/devrodriguez/multitienda-api/category/domain"
+	sd "github.com/devrodriguez/multitienda-api/store/domain"
 	"github.com/gin-gonic/gin"
 )
 
-type CategoryHandler interface {
+type ICategoryHandler interface {
 	GetCategories(c *gin.Context)
 }
 
-type handler struct {
-	serviceContract category.ServiceContract
+type IStoreHandler interface {
+	GetStores(c *gin.Context)
 }
 
-func NewHandler(serviceContract category.ServiceContract) CategoryHandler {
-	return &handler{
+type categoryHandler struct {
+	serviceContract cd.ServiceContract
+}
+
+type storeHandler struct {
+	serviceContract sd.ServiceContract
+}
+
+func NewCategoryHandler(serviceContract cd.ServiceContract) ICategoryHandler {
+	return &categoryHandler{
 		serviceContract: serviceContract,
 	}
 }
 
-func (h *handler) GetCategories(c *gin.Context) {
+func NewStoreHandler(serviceContract sd.ServiceContract) IStoreHandler {
+	return &storeHandler{
+		serviceContract: serviceContract,
+	}
+}
+
+func (h *categoryHandler) GetCategories(c *gin.Context) {
 
 	categories, err := h.serviceContract.GetAll()
 
@@ -30,4 +45,14 @@ func (h *handler) GetCategories(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, categories)
+}
+
+func (h *storeHandler) GetStores(c *gin.Context) {
+	stores, err := h.serviceContract.GetAllStores()
+
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, stores)
 }
