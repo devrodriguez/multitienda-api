@@ -23,3 +23,6 @@ gcloud config list
 
 - Set project
 gcloud config set project [YOUR_PROJECT_ID]
+
+# Test
+go test -cover ./test/store

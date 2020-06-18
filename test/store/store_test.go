@@ -1,23 +1,24 @@
 package store
 
 import (
-	"log"
 	"testing"
 
 	sa "github.com/devrodriguez/multitienda-api/store/application"
 	sd "github.com/devrodriguez/multitienda-api/store/domain"
+	si "github.com/devrodriguez/multitienda-api/store/infrastructure"
+	"github.com/stretchr/testify/assert"
 )
 
 type testRepository struct{}
 
-func NewTestRepository() RepositoryContract {
+func NewTestRepository() si.RepositoryContract {
 	return &testRepository{}
 }
 
 func (tr *testRepository) GetAllStores() ([]*sd.Store, error) {
 	return []*sd.Store{
 		{
-			Name: "StoreTest",
+			Name: "El Negocio",
 		},
 	}, nil
 }
@@ -30,5 +31,16 @@ func TestGetStores(t *testing.T) {
 		t.Error(err)
 	}
 
-	log.Print(s)
+	assert.Equal(t, s[0].Name, "El Negocio@", "Comparison error")
+}
+
+func TestStoresCount(t *testing.T) {
+	sr := NewTestRepository()
+	ss := sa.NewStoreService(sr)
+	s, err := ss.GetAllStores()
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.Greater(t, len(s), 0, "Returned items less or equal 0")
 }
