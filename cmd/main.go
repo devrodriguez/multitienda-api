@@ -3,12 +3,14 @@ package main
 import (
 	"log"
 
-	ca "github.com/devrodriguez/multitienda-api/category/application"
-	ci "github.com/devrodriguez/multitienda-api/category/infrastructure"
 	api "github.com/devrodriguez/multitienda-api/cmd/api"
+	ca "github.com/devrodriguez/multitienda-api/internal/category/application"
+	ci "github.com/devrodriguez/multitienda-api/internal/category/infrastructure"
+	cua "github.com/devrodriguez/multitienda-api/internal/customer/application"
+	cui "github.com/devrodriguez/multitienda-api/internal/customer/infrastructure"
+	sa "github.com/devrodriguez/multitienda-api/internal/store/application"
+	si "github.com/devrodriguez/multitienda-api/internal/store/infrastructure"
 	"github.com/devrodriguez/multitienda-api/middlewares"
-	sa "github.com/devrodriguez/multitienda-api/store/application"
-	si "github.com/devrodriguez/multitienda-api/store/infrastructure"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,15 +29,21 @@ func main() {
 		log.Fatal(err)
 	}
 
+	portIn, err := cui.NewMongoAdapter(mongoURL, mongoDB, mongoTimeout)
+
 	cs := ca.NewCategoryService(cr)
 	ss := sa.NewStoreService(sr)
 	ch := api.NewCategoryHandler(cs)
 	sh := api.NewStoreHandler(ss)
+	cus := cua.NewCustomerService(portIn)
+	cuh := api.NewCustomerHandler(cus)
 
 	app := gin.New()
 	app.Use(gin.Recovery(), middlewares.Logger(), middlewares.CORSAllowed())
 
 	app.GET("/categories", ch.GetCategories)
 	app.GET("/stores", sh.GetStores)
+	app.GET("/customers", cuh.GetAll)
+	app.POST("/customers", cuh.Create)
 	app.Run(":3001")
 }

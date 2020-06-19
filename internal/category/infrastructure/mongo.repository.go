@@ -1,11 +1,11 @@
-package store
+package category
 
 import (
 	"context"
 	"log"
 	"time"
 
-	domain "github.com/devrodriguez/multitienda-api/store/domain"
+	domain "github.com/devrodriguez/multitienda-api/internal/category/domain"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -36,7 +36,8 @@ func newMongoClient(mongoURL string, mongoTimeout int) (*mongo.Client, error) {
 	return client, nil
 }
 
-func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (RepositoryContract, error) {
+// NewMongoRepository return a new implentation
+func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (domain.RepositoryContract, error) {
 	repo := &mongoRepository{
 		timeout:  time.Duration(mongoTimeout) * time.Second,
 		database: mongoDB,
@@ -44,27 +45,27 @@ func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (RepositoryC
 
 	client, err := newMongoClient(mongoURL, mongoTimeout)
 	if err != nil {
-		return nil, errors.Wrap(err, "store.repository.NewMongoRepository")
+		return nil, errors.Wrap(err, "category.repository.NewMongoRepository")
 	}
 
 	repo.client = client
 	return repo, nil
 }
 
-func (r *mongoRepository) GetAllStores() ([]*domain.Store, error) {
-	var categories []*domain.Store
+func (r *mongoRepository) GetAll() ([]*domain.Category, error) {
+	var categories []*domain.Category
 	ctx, cancel := context.WithTimeout(context.Background(), r.timeout)
 	defer cancel()
 
 	findOptions := options.Find()
-	categoriesRef := r.client.Database(r.database).Collection("stores")
+	categoriesRef := r.client.Database(r.database).Collection("categories")
 	categoriesCur, err := categoriesRef.Find(ctx, bson.D{{}}, findOptions)
 	if err != nil {
-		return nil, errors.Wrap(err, "store.repository.GetAll")
+		return nil, errors.Wrap(err, "repository.GetAll")
 	}
 
 	for categoriesCur.Next(context.TODO()) {
-		var category domain.Store
+		var category domain.Category
 
 		err := categoriesCur.Decode(&category)
 		if err != nil {

@@ -1,7 +1,7 @@
 package store
 
 import (
-	category "github.com/devrodriguez/multitienda-api/category/domain"
+	category "github.com/devrodriguez/multitienda-api/internal/category/domain"
 	"github.com/devrodriguez/multitienda-api/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

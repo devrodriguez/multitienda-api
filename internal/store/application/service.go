@@ -1,16 +1,15 @@
 package store
 
 import (
-	domain "github.com/devrodriguez/multitienda-api/store/domain"
-	infra "github.com/devrodriguez/multitienda-api/store/infrastructure"
+	domain "github.com/devrodriguez/multitienda-api/internal/store/domain"
 )
 
 type storeService struct {
-	storeRepository infra.RepositoryContract
+	storeRepository domain.RepositoryContract
 }
 
 // NewStoreService return a new store service interface
-func NewStoreService(sr infra.RepositoryContract) domain.ServiceContract {
+func NewStoreService(sr domain.RepositoryContract) domain.ServiceContract {
 	return &storeService{
 		storeRepository: sr,
 	}
