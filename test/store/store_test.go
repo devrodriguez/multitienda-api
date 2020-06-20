@@ -3,9 +3,9 @@ package store
 import (
 	"testing"
 
-	sa "github.com/devrodriguez/multitienda-api/store/application"
-	sd "github.com/devrodriguez/multitienda-api/store/domain"
-	si "github.com/devrodriguez/multitienda-api/store/infrastructure"
+	sa "github.com/devrodriguez/multitienda-api/internal/store/application"
+	sd "github.com/devrodriguez/multitienda-api/internal/store/domain"
+	si "github.com/devrodriguez/multitienda-api/internal/store/infrastructure"
 	"github.com/stretchr/testify/assert"
 )
 

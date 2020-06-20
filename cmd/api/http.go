@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	cd "github.com/devrodriguez/multitienda-api/internal/category/domain"
-	cud "github.com/devrodriguez/multitienda-api/internal/customer/domain"
+	customer "github.com/devrodriguez/multitienda-api/internal/customer"
 	sd "github.com/devrodriguez/multitienda-api/internal/store/domain"
 	"github.com/gin-gonic/gin"
 )
@@ -31,7 +31,7 @@ type storeHandler struct {
 }
 
 type customerHandler struct {
-	adapter cud.CustomerPortOut
+	adapter customer.PortIn
 }
 
 func NewCategoryHandler(serviceContract cd.ServiceContract) ICategoryHandler {
@@ -46,7 +46,7 @@ func NewStoreHandler(serviceContract sd.ServiceContract) IStoreHandler {
 	}
 }
 
-func NewCustomerHandler(adapter cud.CustomerPortOut) ICustomerHandler {
+func NewCustomerHandler(adapter customer.PortIn) ICustomerHandler {
 	return &customerHandler{
 		adapter,
 	}
@@ -83,7 +83,7 @@ func (h *customerHandler) GetAll(c *gin.Context) {
 }
 
 func (h *customerHandler) Create(c *gin.Context) {
-	var customer cud.Customer
+	var customer customer.Customer
 	c.BindJSON(&customer)
 	err := h.adapter.Create(customer)
 	if err != nil {

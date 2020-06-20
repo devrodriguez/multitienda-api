@@ -2,48 +2,29 @@ package category
 
 import (
 	"context"
-	"log"
 	"time"
 
-	domain "github.com/devrodriguez/multitienda-api/internal/category/domain"
+	"github.com/devrodriguez/multitienda-api/internal/shared"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type mongoRepository struct {
+type adapterOut struct {
 	client   *mongo.Client
 	database string
 	timeout  time.Duration
 }
 
-func newMongoClient(mongoURL string, mongoTimeout int) (*mongo.Client, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mongoTimeout)*time.Second)
-	defer cancel()
-
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURL))
-	if err != nil {
-		return nil, err
-	}
-
-	err = client.Ping(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Print(client)
-	return client, nil
-}
-
 // NewMongoRepository return a new implentation
-func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (domain.RepositoryContract, error) {
-	repo := &mongoRepository{
+func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (PortOut, error) {
+	repo := &adapterOut{
 		timeout:  time.Duration(mongoTimeout) * time.Second,
 		database: mongoDB,
 	}
 
-	client, err := newMongoClient(mongoURL, mongoTimeout)
+	client, err := shared.NewMongoClient(mongoURL, mongoTimeout)
 	if err != nil {
 		return nil, errors.Wrap(err, "category.repository.NewMongoRepository")
 	}
@@ -52,8 +33,8 @@ func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (domain.Repo
 	return repo, nil
 }
 
-func (r *mongoRepository) GetAll() ([]*domain.Category, error) {
-	var categories []*domain.Category
+func (r *adapterOut) GetAllDB() ([]*Category, error) {
+	var categories []*Category
 	ctx, cancel := context.WithTimeout(context.Background(), r.timeout)
 	defer cancel()
 
@@ -61,11 +42,11 @@ func (r *mongoRepository) GetAll() ([]*domain.Category, error) {
 	categoriesRef := r.client.Database(r.database).Collection("categories")
 	categoriesCur, err := categoriesRef.Find(ctx, bson.D{{}}, findOptions)
 	if err != nil {
-		return nil, errors.Wrap(err, "repository.GetAll")
+		return nil, errors.Wrap(err, "repository.GetAllDB")
 	}
 
 	for categoriesCur.Next(context.TODO()) {
-		var category domain.Category
+		var category Category
 
 		err := categoriesCur.Decode(&category)
 		if err != nil {

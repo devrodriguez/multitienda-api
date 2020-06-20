@@ -1,5 +1,5 @@
 package category
 
-type ServiceContract interface {
+type PortIn interface {
 	GetAll() ([]*Category, error)
 }

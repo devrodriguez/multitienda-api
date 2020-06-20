@@ -1,6 +1,6 @@
 package customer
 
-type CustomerPortOut interface {
+type PortIn interface {
 	GetAll() ([]*Customer, error)
 	Create(Customer) error
 }

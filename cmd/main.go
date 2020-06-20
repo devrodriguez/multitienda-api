@@ -6,8 +6,7 @@ import (
 	api "github.com/devrodriguez/multitienda-api/cmd/api"
 	ca "github.com/devrodriguez/multitienda-api/internal/category/application"
 	ci "github.com/devrodriguez/multitienda-api/internal/category/infrastructure"
-	cua "github.com/devrodriguez/multitienda-api/internal/customer/application"
-	cui "github.com/devrodriguez/multitienda-api/internal/customer/infrastructure"
+	customer "github.com/devrodriguez/multitienda-api/internal/customer"
 	sa "github.com/devrodriguez/multitienda-api/internal/store/application"
 	si "github.com/devrodriguez/multitienda-api/internal/store/infrastructure"
 	"github.com/devrodriguez/multitienda-api/middlewares"
@@ -29,14 +28,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	portIn, err := cui.NewMongoAdapter(mongoURL, mongoDB, mongoTimeout)
+	cusPortOut, err := customer.NewAdapterOut(mongoURL, mongoDB, mongoTimeout)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	cs := ca.NewCategoryService(cr)
 	ss := sa.NewStoreService(sr)
 	ch := api.NewCategoryHandler(cs)
 	sh := api.NewStoreHandler(ss)
-	cus := cua.NewCustomerService(portIn)
-	cuh := api.NewCustomerHandler(cus)
+	cusAdapIn := customer.NewAdapterIn(cusPortOut)
+	cuh := api.NewCustomerHandler(cusAdapIn)
 
 	app := gin.New()
 	app.Use(gin.Recovery(), middlewares.Logger(), middlewares.CORSAllowed())
